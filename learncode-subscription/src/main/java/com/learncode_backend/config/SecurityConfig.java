@@ -15,9 +15,10 @@ public class SecurityConfig {
             .cors(Customizer.withDefaults())
 
             .authorizeHttpRequests(auth -> auth
-                // HomeAdmin
-                .requestMatchers("/api/subscription/daily-income").permitAll()
-
+                // Admin
+                .requestMatchers("/api/subscription/**").permitAll()
+                .requestMatchers("/api/admin/**").permitAll()
+                
                 // Públicos
                 .requestMatchers("/api/plans/**").permitAll()
                 .requestMatchers("/api/courses/**").permitAll()

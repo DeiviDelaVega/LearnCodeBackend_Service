@@ -30,10 +30,20 @@ spring:
           predicates:
             - Path=/api/auth/**
 
-        - id: admin
+        - id: admin-home
           uri: lb://AUTH-SERVICE
           predicates:
-            - Path=/api/admin/**
+            - Path=/api/admin/dashboard
+
+        - id: admin-client
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/api/admin/gestionCliente/**
+
+        - id: admin-subscription
+          uri: lb://SUBSCRIPTION-SERVICE
+          predicates:
+            - Path=/api/admin/gestionSuscripcion/**
 
         - id: catalog
           uri: lb://CATALOG-SERVICE

@@ -2,19 +2,13 @@ package com.learncode_backend.config;
 
 import java.util.List;
 import java.util.UUID;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import com.learncode_backend.model.User;
 import com.learncode_backend.repository.UserRepository;
 
@@ -39,9 +33,12 @@ public class SecurityConfig {
              
             	    // Stripe
             	    .requestMatchers("/api/stripe/webhook").permitAll()  
-            	    .requestMatchers("/api/stripe/**").authenticated() 
+            	    .requestMatchers("/api/stripe/**").authenticated()
+            	    
             	    // Auth
+            	    .requestMatchers("/api/auth/internal/**").permitAll()
             	    .requestMatchers("/api/auth/**").authenticated()
+            	    
             	    // Public
             	    .requestMatchers("/api/courses/**").permitAll()
             	    .requestMatchers("/api/plans").permitAll()
