@@ -30,6 +30,11 @@ spring:
           predicates:
             - Path=/api/auth/**
 
+        - id: plans
+          uri: lb://SUBSCRIPTION-SERVICE
+          predicates:
+            - Path=/api/plans/**
+
         - id: admin
           uri: lb://AUTH-SERVICE
           predicates:
@@ -44,6 +49,11 @@ spring:
           uri: lb://SUBSCRIPTION-SERVICE
           predicates:
             - Path=/api/subscription/**
+
+        - id: stripe
+          uri: lb://SUBSCRIPTION-SERVICE
+          predicates:
+            - Path=/api/stripe/**
 
 eureka:
   client:
