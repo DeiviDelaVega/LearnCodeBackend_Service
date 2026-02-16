@@ -8,15 +8,15 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
-
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         http
             .csrf(csrf -> csrf.disable())
             .cors(Customizer.withDefaults())
 
             .authorizeHttpRequests(auth -> auth
+                // HomeAdmin
+                .requestMatchers("/api/subscription/daily-income").permitAll()
 
                 // Públicos
                 .requestMatchers("/api/plans/**").permitAll()
@@ -27,7 +27,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
 
-            // ✅ Nueva forma (no deprecated)
+            // Nueva forma (no deprecated)
             .oauth2ResourceServer(oauth ->
                 oauth.jwt(Customizer.withDefaults())
             );
@@ -35,5 +35,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
-
-
