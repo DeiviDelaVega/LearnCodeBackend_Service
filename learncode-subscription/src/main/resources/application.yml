@@ -4,6 +4,11 @@ server:
 spring:
   application:
     name: SUBSCRIPTION-SERVICE
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+         issuer-uri: https://accounts.google.com
 
   datasource:
     url: jdbc:postgresql://localhost:5432/learncode_db_fn
