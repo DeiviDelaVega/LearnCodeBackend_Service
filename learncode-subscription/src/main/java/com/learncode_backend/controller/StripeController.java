@@ -1,6 +1,7 @@
 package com.learncode_backend.controller;
 
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.learncode_backend.client.AuthClient;
 import com.learncode_backend.repository.PlanRepository;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
@@ -21,14 +23,17 @@ public class StripeController {
     
     @Autowired
     private PlanRepository planRepo;
-
+    
+    @Autowired
+    private AuthClient authClient;
+    
     @PostMapping("/checkout")
     public Map<String, String> createCheckout(
         @RequestParam String planCode,
         @AuthenticationPrincipal Jwt jwt
     ) throws Exception {
 
-        String userId = jwt.getSubject(); // sub
+    	UUID userId = authClient.getMe().getId();
 
         String priceId = getPriceId(planCode);
 
@@ -46,7 +51,7 @@ public class StripeController {
                 )
 
                 // Metadata real
-                .putMetadata("userId", userId)
+                .putMetadata("userId", userId.toString())
                 .putMetadata("planCode", planCode)
 
                 .addLineItem(
