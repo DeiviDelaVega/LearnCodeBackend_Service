@@ -8,7 +8,6 @@ import com.learncode_backend.service.CloudinaryService;
 
 @RestController
 @RequestMapping("/api/admin/upload")
-@CrossOrigin("*")
 public class CloudinaryController {
 
     private final CloudinaryService cloudinaryService;

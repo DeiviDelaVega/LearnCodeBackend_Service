@@ -25,6 +25,7 @@ spring:
 
       routes:
 
+        # AUTH SERVICE
         - id: auth
           uri: lb://AUTH-SERVICE
           predicates:
@@ -40,15 +41,11 @@ spring:
           predicates:
             - Path=/api/admin/gestionCliente/**
 
+        # SUBSCRIPTION SERVICE
         - id: admin-subscription
           uri: lb://SUBSCRIPTION-SERVICE
           predicates:
             - Path=/api/admin/gestionSuscripcion/**
-
-        - id: catalog
-          uri: lb://CATALOG-SERVICE
-          predicates:
-            - Path=/api/catalog/**
 
         - id: plans
           uri: lb://SUBSCRIPTION-SERVICE
@@ -69,6 +66,28 @@ spring:
           uri: lb://SUBSCRIPTION-SERVICE
           predicates:
             - Path=/api/payments/**
+
+        # CATALOG SERVICE
+        - id: catalog
+          uri: lb://CATALOG-SERVICE
+          predicates:
+            - Path=/api/catalog/**
+
+        - id: admin-courses
+          uri: lb://CATALOG-SERVICE
+          predicates:
+            - Path=/api/admin/courses/**
+
+        - id: courses-client
+          uri: lb://CATALOG-SERVICE
+          predicates:
+            - Path=/api/courses/**
+
+        # ✅ UPLOAD CLOUDINARY
+        - id: admin-upload
+          uri: lb://CATALOG-SERVICE
+          predicates:
+            - Path=/api/admin/upload/**
 
 eureka:
   client:

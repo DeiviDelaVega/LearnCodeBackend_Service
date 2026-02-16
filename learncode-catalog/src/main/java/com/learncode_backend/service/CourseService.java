@@ -22,7 +22,7 @@ public interface CourseService {
 	List<Course> findPublished(String title);
 	
 	//CLIENT
-	List<ClientCourseDTO> listPublished(String title);
+	List<ClientCourseDTO> listPublished();
 	ClientCourseDTO getById(UUID id);
 	
 }

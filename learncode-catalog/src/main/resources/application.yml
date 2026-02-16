@@ -11,7 +11,7 @@ spring:
          issuer-uri: https://accounts.google.com
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/learncode_db_fn
+    url: jdbc:postgresql://localhost:5432/learncode_db
     username: postgres
     password: sql
     driver-class-name: org.postgresql.Driver
@@ -22,7 +22,7 @@ spring:
       hibernate:
         default_schema: catalog_schema
         format_sql: true
-
+        
 eureka:
   instance:
     prefer-ip-address: true
