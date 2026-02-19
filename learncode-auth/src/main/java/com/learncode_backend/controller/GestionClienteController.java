@@ -1,17 +1,11 @@
 package com.learncode_backend.controller;
 
-import com.learncode_backend.dto.GestionClienteDTO;
-import com.learncode_backend.model.User;
+import com.learncode_backend.dto.EditarClienteDTO;
+import com.learncode_backend.dto.ListarClienteDTO;
 import com.learncode_backend.service.GestionClienteService;
-import com.learncode_backend.utils.ApiResponse;
-import com.learncode_backend.utils.BusinessException;
-import com.learncode_backend.utils.ModeloNotFoundException;
 import jakarta.validation.Valid;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -21,79 +15,37 @@ import java.nio.charset.StandardCharsets;
 public class GestionClienteController {
 	@Autowired
     private GestionClienteService service;
-	
-	@Autowired
-	private ModelMapper mapper;
-	
+
     @GetMapping
-    public ResponseEntity<ApiResponse<?>> listarClientes(
+    public Page<ListarClienteDTO> listarClientes(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String role,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
-    ) throws Exception {
-
-        Page<User> data = service.listarClientes(
-                search,
-                status,
-                role,
-                PageRequest.of(page, size)
-        );
-
-        Page<GestionClienteDTO> info =
-                data.map(user -> mapper.map(user, GestionClienteDTO.class));
-
-        ApiResponse<Page<GestionClienteDTO>> response =
-                new ApiResponse<>(true, "Lista de clientes", info);
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return service.listarClientes(search, status, role, pageable);
     }
     
     @GetMapping("/{email}")
-    public ResponseEntity<ApiResponse<?>> obtenerCliente(
-            @PathVariable String email
-    ) throws Exception {
+    public ListarClienteDTO obtenerCliente(@PathVariable String email) {
+        email = URLDecoder.decode(email, StandardCharsets.UTF_8)
+                .trim()
+                .toLowerCase();
 
-        email = URLDecoder.decode(email, StandardCharsets.UTF_8);
-
-        User user = service.obtenerCliente(email);
-
-        if (user == null)
-            throw new ModeloNotFoundException("Cliente con email :" + email + " no existe");
-
-        GestionClienteDTO dto =
-                mapper.map(user, GestionClienteDTO.class);
-
-        ApiResponse<GestionClienteDTO> response =
-                new ApiResponse<>(true, "Cliente encontrado", dto);
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return service.obtenerCliente(email);
     }
     
     @PutMapping("/{email}")
-    public ResponseEntity<ApiResponse<?>> editarCliente(
+    public ListarClienteDTO editarCliente(
             @PathVariable String email,
-            @Valid @RequestBody GestionClienteDTO data
-    ) throws Exception {
+            @Valid @RequestBody EditarClienteDTO data
+    ) {
+        email = URLDecoder.decode(email, StandardCharsets.UTF_8)
+                .trim()
+                .toLowerCase();
 
-        email = URLDecoder.decode(email, StandardCharsets.UTF_8);
-
-        if (data == null)
-            throw new BusinessException("Datos inválidos");
-
-        User user =
-                mapper.map(data, User.class);
-
-        User actualizado =
-                service.editarCliente(email, user);
-
-        GestionClienteDTO dto =
-                mapper.map(actualizado, GestionClienteDTO.class);
-
-        ApiResponse<GestionClienteDTO> response =
-                new ApiResponse<>(true, "Cliente actualizado", dto);
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return service.editarCliente(email, data);
     }
 }

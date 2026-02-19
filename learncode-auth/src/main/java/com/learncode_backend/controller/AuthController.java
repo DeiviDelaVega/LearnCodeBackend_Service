@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.learncode_backend.dto.UserDTO;
 import com.learncode_backend.model.User;
 import com.learncode_backend.repository.UserRepository;
 import com.learncode_backend.service.UserService;
@@ -29,34 +28,13 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public UserDTO me(@AuthenticationPrincipal Jwt jwt) {
-
-        User user = userService.getOrCreateUser(jwt);
-
-        return new UserDTO(
-                user.getId(),
-                user.getFullName(),
-                user.getEmail(),
-                user.getPhoto(),
-                user.getRole(),     
-                user.getStatus() 
-            );
+    public User me(@AuthenticationPrincipal Jwt jwt) {
+        return userService.getOrCreateUser(jwt);
     }
     
     @GetMapping("/internal/user/{id}")
-    public UserDTO getUserById(@PathVariable UUID id) {
-
-        User user = userRepository.findById(id)
+    public User getUserById(@PathVariable UUID id) {
+        return userRepository.findById(id)
             .orElseThrow();
-
-        return new UserDTO(
-            user.getId(),
-            user.getFullName(),
-            user.getEmail(),
-            user.getPhoto(),
-            user.getRole(),   
-            user.getStatus()  
-        );
     }
-
 }
