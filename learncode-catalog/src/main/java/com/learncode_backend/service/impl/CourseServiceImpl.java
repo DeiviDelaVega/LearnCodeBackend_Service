@@ -56,7 +56,7 @@ public class CourseServiceImpl implements CourseService {
 		courseExiting.setCoverUrl(course.getCoverUrl());
 		courseExiting.setFree(course.isFree());
 		courseExiting.setRequiredPlanCode(course.getRequiredPlanCode());
-		courseExiting.setIsPublished(course.isPublished());
+		courseExiting.setPublished(course.isPublished());
 
 		return courseRepo.save(courseExiting);
 	}
@@ -81,8 +81,8 @@ public class CourseServiceImpl implements CourseService {
 	}
 
 	@Override
-	public List<ClientCourseDTO> listPublished() {
-		return courseRepo.findAllIsPublishedWithCounts();
+	public List<ClientCourseDTO> listPublished(String title) {
+		return courseRepo.findAllPublishedWithCounts(title);
 	}
 
 	@Override

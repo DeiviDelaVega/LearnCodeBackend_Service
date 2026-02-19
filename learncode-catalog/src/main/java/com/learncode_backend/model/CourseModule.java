@@ -29,11 +29,6 @@ public class CourseModule {
     @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("uploadedAt ASC")
     private List<ModuleFile> files;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_id", insertable = false, updatable = false)
-    private Course course;
-
 
     @PrePersist
     public void prePersist() {

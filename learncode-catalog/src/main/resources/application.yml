@@ -4,11 +4,6 @@ server:
 spring:
   application:
     name: CATALOG-SERVICE
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-         issuer-uri: https://accounts.google.com
 
   datasource:
     url: jdbc:postgresql://localhost:5432/learncode_db_fn
@@ -22,7 +17,7 @@ spring:
       hibernate:
         default_schema: catalog_schema
         format_sql: true
-        
+
 eureka:
   instance:
     prefer-ip-address: true

@@ -19,9 +19,7 @@ public class PlanController {
 
     @GetMapping
     public List<PlanDTO> listPlans() {
-        List<PlanDTO> plans = service.getActivePlans();
-        System.out.println("PLANES: " + plans.size());
-        return plans;
+        return service.getActivePlans();
     }
 }
 

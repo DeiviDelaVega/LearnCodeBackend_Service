@@ -33,25 +33,22 @@ public interface CourseRepository extends JpaRepository<Course, UUID> {
 			Pageable pageable);
 
 	@Query("""
-		    SELECT new com.learncode_backend.dto.ClientCourseDTO(
-		        c.id,
-		        c.title,
-		        c.subtitle,
-		        c.iconUrl,
-		        c.coverUrl,
-		        c.isFree,
-		        c.requiredPlanCode,
-		        COUNT(DISTINCT m),
-		        COUNT(DISTINCT f)
-		    )
-		    FROM Course c
-		    LEFT JOIN c.modules m
-		    LEFT JOIN m.files f
-		    WHERE c.isPublished = true
-		    GROUP BY c.id, c.title, c.subtitle, c.iconUrl, c.coverUrl, c.isFree, c.requiredPlanCode
-		""")
-		List<ClientCourseDTO> findAllIsPublishedWithCounts();
-
+			SELECT new com.learncode_backend.dto.ClientCourseDTO(
+			    c.id,
+			    c.title,
+			    c.subtitle,
+			    c.iconUrl,
+			    c.coverUrl,
+			    c.isFree,
+			    c.requiredPlanCode,
+			    (SELECT COUNT(cm) FROM CourseModule cm WHERE cm.courseId = c.id),
+			    (SELECT COUNT(mf) FROM ModuleFile mf JOIN mf.module m WHERE m.courseId = c.id)
+			)
+			FROM Course c
+			WHERE c.isPublished = true
+			AND (:title IS NULL OR LOWER(c.title) LIKE LOWER(CONCAT('%', CAST(:title AS string), '%')))
+			""")
+	List<ClientCourseDTO> findAllPublishedWithCounts(@Param("title") String title);
 
 	@Query("SELECT new com.learncode_backend.dto.ClientCourseDTO("
 			+ "c.id, c.title, c.subtitle, c.iconUrl, c.coverUrl, c.isFree, c.requiredPlanCode, "

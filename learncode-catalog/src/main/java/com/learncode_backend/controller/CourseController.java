@@ -24,8 +24,8 @@ public class CourseController {
 	}
 
 	@GetMapping
-	public List<ClientCourseDTO> listPublished() {
-		List<ClientCourseDTO> result = courseService.listPublished();
+	public List<ClientCourseDTO> listPublished(@RequestParam(required = false) String title) {
+		List<ClientCourseDTO> result = courseService.listPublished(title);
 		return result;
 	}
 
