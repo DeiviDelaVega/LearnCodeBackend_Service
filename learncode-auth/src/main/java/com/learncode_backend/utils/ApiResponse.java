@@ -13,4 +13,11 @@ public class ApiResponse<T> {
 	//private LocalDateTime fecha;
 	private String mensaje;
 	private T data;
+	
+	public ApiResponse(boolean success, String mensaje, T data) {
+		this.success = success;
+		this.mensaje = mensaje;
+		this.data = data;
+	}
+	
 }
