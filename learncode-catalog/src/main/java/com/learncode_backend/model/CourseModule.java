@@ -17,38 +17,32 @@ public class CourseModule {
     private UUID courseId;
 
     @Column(name = "module_order", nullable = false)
-    private Integer order; // 1, 2, 3...
+    private Integer moduleOrder;
 
-    @Column(nullable = false, length = 150)
+    @Column(nullable = false)
     private String title;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    // Relación para traer los archivos automáticamente
     @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("uploadedAt ASC")
     private List<ModuleFile> files;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_id", insertable = false, updatable = false)
-    private Course course;
-
 
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
 
-    // Getters y Setters
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
     public UUID getCourseId() { return courseId; }
     public void setCourseId(UUID courseId) { this.courseId = courseId; }
-    public Integer getOrder() { return order; }
-    public void setOrder(Integer order) { this.order = order; }
+    public Integer getModuleOrder() { return moduleOrder; }
+    public void setModuleOrder(Integer moduleOrder) { this.moduleOrder = moduleOrder; }
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public List<ModuleFile> getFiles() { return files; }
     public void setFiles(List<ModuleFile> files) { this.files = files; }
 }

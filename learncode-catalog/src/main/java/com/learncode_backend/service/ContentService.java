@@ -7,10 +7,12 @@ import com.learncode_backend.model.CourseModule;
 import com.learncode_backend.model.ModuleFile;
 import com.learncode_backend.repository.CourseModuleRepository;
 import com.learncode_backend.repository.ModuleFileRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -25,13 +27,11 @@ public class ContentService {
         this.fileRepo = fileRepo;
     }
 
-    // --- Módulos ---
-
     public List<ModuleDTO> getModulesByCourse(UUID courseId) {
-        return moduleRepo.findByCourseIdOrderByOrderAsc(courseId).stream()
+        return moduleRepo.findByCourseIdOrderByModuleOrderAsc(courseId).stream()
             .map(m -> new ModuleDTO(
                 m.getId(),
-                m.getOrder(),
+                m.getModuleOrder(),
                 m.getTitle(),
                 m.getFiles().stream()
                     .map(f -> new FileDTO(f.getId(), f.getFileName(), f.getMimeType()))
@@ -45,7 +45,15 @@ public class ContentService {
         CourseModule module = new CourseModule();
         module.setCourseId(courseId);
         module.setTitle(title);
-        module.setOrder(order);
+        module.setModuleOrder(order);
+        return moduleRepo.save(module);
+    }
+
+    @Transactional
+    public CourseModule updateModule(UUID moduleId, String newTitle) {
+        CourseModule module = moduleRepo.findById(moduleId)
+            .orElseThrow(() -> new RuntimeException("Modulo no encontrado"));
+        module.setTitle(newTitle);
         return moduleRepo.save(module);
     }
 
@@ -53,17 +61,12 @@ public class ContentService {
     public void deleteModule(UUID moduleId) {
         moduleRepo.deleteById(moduleId);
     }
-    
-    // --- Archivos ---
-
- // En ContentService.java
 
     @Transactional
     public void uploadFile(CreateFileDTO dto) {
         CourseModule module = moduleRepo.findById(dto.moduleId())
             .orElseThrow(() -> new RuntimeException("Modulo no encontrado"));
 
-        // LÓGICA NUEVA: Limpiar archivos anteriores para garantizar 1 PDF por módulo
         if (module.getFiles() != null && !module.getFiles().isEmpty()) {
             fileRepo.deleteAll(module.getFiles());
             module.getFiles().clear();
@@ -78,21 +81,19 @@ public class ContentService {
         fileRepo.save(file);
     }
 
-    public ModuleFile getFileContent(UUID fileId) {
-        return fileRepo.findById(fileId)
+    public ResponseEntity<Map<String, String>> getFileContent(UUID fileId) {
+        ModuleFile file = fileRepo.findById(fileId)
             .orElseThrow(() -> new RuntimeException("Archivo no encontrado"));
+            
+        return ResponseEntity.ok(Map.of(
+            "fileName", file.getFileName(),
+            "mimeType", file.getMimeType(),
+            "base64", file.getBase64Content()
+        ));
     }
 
     @Transactional
     public void deleteFile(UUID fileId) {
         fileRepo.deleteById(fileId);
-    }
-    
-    @Transactional
-    public CourseModule updateModule(UUID moduleId, String newTitle) {
-        CourseModule module = moduleRepo.findById(moduleId)
-            .orElseThrow(() -> new RuntimeException("Módulo no encontrado"));
-        module.setTitle(newTitle);
-        return moduleRepo.save(module);
     }
 }

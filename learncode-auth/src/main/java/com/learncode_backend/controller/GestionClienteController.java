@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/admin/gestionCliente")
@@ -95,5 +96,15 @@ public class GestionClienteController {
                 new ApiResponse<>(true, "Cliente actualizado", dto);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    
+    
+    @GetMapping("/id/{email}")
+    public ResponseEntity<UUID> obtenerIdPorEmail(@PathVariable String email) {
+        User user = service.obtenerCliente(email); 
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(user.getId());
     }
 }
