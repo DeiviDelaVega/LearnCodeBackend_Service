@@ -1,19 +1,19 @@
 package com.learncode_backend.service;
 
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import com.learncode_backend.dto.EditarClienteDTO;
-import com.learncode_backend.dto.ListarClienteDTO;
+import com.learncode_backend.model.User;
 
-public interface GestionClienteService {
-	Page<ListarClienteDTO> listarClientes(
+public interface GestionClienteService extends ICRUD<User, UUID>{
+	Page<User> listarClientes(
             String search,
             String status,
             String role,
             Pageable pageable
     );
 	
-	ListarClienteDTO obtenerCliente(String email);
+	User obtenerCliente(String email);
 	
-    ListarClienteDTO editarCliente(String email, EditarClienteDTO data);
+    User editarCliente(String email, User user);
 }
