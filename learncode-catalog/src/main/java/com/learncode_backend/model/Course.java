@@ -1,16 +1,19 @@
 package com.learncode_backend.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import java.sql.Types;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
@@ -50,6 +53,11 @@ public class Course {
 
 	@Column(name = "created_at", nullable = false)
 	private LocalDateTime createdAt;
+	
+	@OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<CourseModule> modules;
+
+
 
 	public Course() {
 	}
@@ -137,7 +145,7 @@ public class Course {
 		return isPublished;
 	}
 
-	public void setPublished(boolean isPublished) {
+	public void setIsPublished(boolean isPublished) {
 		this.isPublished = isPublished;
 	}
 

@@ -1,87 +1,63 @@
 package com.learncode_backend.service.impl;
 
-import com.learncode_backend.dto.EditarClienteDTO;
-import com.learncode_backend.dto.ListarClienteDTO;
+import java.util.UUID;
 import com.learncode_backend.model.User;
 import com.learncode_backend.repository.GestionClienteRepository;
 import com.learncode_backend.repository.UserRepository;
 import com.learncode_backend.service.GestionClienteService;
+import com.learncode_backend.utils.ModeloNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GestionClienteServiceImpl implements GestionClienteService{
+public class GestionClienteServiceImpl extends ICRUDImpl<User, UUID> implements GestionClienteService {
 	@Autowired
-    private GestionClienteRepository gestionClienteRepository;
+    private GestionClienteRepository repo;
 
-	@Autowired
+    @Autowired
     private UserRepository userRepository;
-
-	@Override
-	public Page<ListarClienteDTO> listarClientes(String search, String status, String role, Pageable pageable) {
-		if (search != null && search.isBlank()) search = null;
-        if (search != null) search = search.toLowerCase();
-        if (status == null || "ALL".equalsIgnoreCase(status)) status = null;
-        if (role == null || role.isBlank()) role = "USER";
-        role = role.toUpperCase();
-
-        Page<ListarClienteDTO> page =
-                gestionClienteRepository.findClientes(
-                        search,
-                        status,
-                        role,
-                        pageable
-                );
-
-        page.getContent().forEach(dto -> {
-            if (dto.getPhoto() == null || dto.getPhoto().isEmpty()) {
-                dto.setPhoto(
-                    "https://ui-avatars.com/api/?name=" +
-                    dto.getFullName().replace(" ", "+")
-                );
-            }
-        });
-
-        return page;
-	}
 	
+    @Override
+    public JpaRepository<User, UUID> getRepository() {
+        return repo;
+    }
+    
 	@Override
-	public ListarClienteDTO obtenerCliente(String email) {
-	    User user = userRepository.findByEmail(email)
-	            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+	public Page<User> listarClientes(String search, String status, String role, Pageable pageable) {
+		if (search != null && search.isBlank())
+            search = null;
 
-	    return new ListarClienteDTO(
-	            user.getId(),
-	            user.getEmail(),
-	            user.getFullName(),
-	            user.getPhoto(),
-	            user.getRole(),
-	            user.getStatus(),
-	            user.getCreatedAt()
-	    );
+        if (status == null || status.equalsIgnoreCase("ALL"))
+            status = null;
+
+        if (role == null || role.isBlank())
+            role = null;
+        
+        return repo.findClientes(search, status, role, pageable);
 	}
-	
+
 	@Override
-	public ListarClienteDTO editarCliente(String email, EditarClienteDTO data) {
-		User user = userRepository.findByEmail(email.trim().toLowerCase())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+	public User obtenerCliente(String email) {
+		return userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new ModeloNotFoundException(
+                                "Cliente no existe con email: " + email));
+	}
 
-        user.setFullName(data.getFullName());
-        user.setRole(data.getRole());
-        user.setStatus(data.getStatus());
+	@Override
+	public User editarCliente(String email, User user) {
+		User usuarioBD = userRepository.findByEmail(email)
+	            .orElseThrow(() ->
+	                    new ModeloNotFoundException(
+	                            "Cliente no existe con email: " + email));
 
-        userRepository.save(user);
+	    usuarioBD.setFullName(user.getFullName());
+	    usuarioBD.setRole(user.getRole());
+	    usuarioBD.setStatus(user.getStatus());
 
-        return new ListarClienteDTO(
-                user.getId(),
-                user.getEmail(),
-                user.getFullName(),
-                user.getPhoto(),
-                user.getRole(),
-                user.getStatus(),
-                user.getCreatedAt()
-        );
+	    return repo.save(usuarioBD);
 	}
 }

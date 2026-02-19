@@ -18,6 +18,13 @@ spring:
         default_schema: subscription_schema
         format_sql: true
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://accounts.google.com
+          audiences: "107744191965-81u4lmkf2s6r93vjbf5s0nji42h0sa5d.apps.googleusercontent.com"
+
 eureka:
   instance:
     prefer-ip-address: true
