@@ -6,7 +6,7 @@ spring:
     name: SUBSCRIPTION-SERVICE
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/learncode_db
+    url: jdbc:postgresql://localhost:5432/learncode_db_fn
     username: postgres
     password: sql
     driver-class-name: org.postgresql.Driver

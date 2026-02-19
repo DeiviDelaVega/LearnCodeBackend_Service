@@ -11,7 +11,7 @@ spring:
          issuer-uri: https://accounts.google.com
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/learncode_db
+    url: jdbc:postgresql://localhost:5432/learncode_db_fn
     username: postgres
     password: sql
     driver-class-name: org.postgresql.Driver
