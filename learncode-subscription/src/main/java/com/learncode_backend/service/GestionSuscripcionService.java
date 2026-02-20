@@ -1,19 +1,18 @@
 package com.learncode_backend.service;
 
-import com.learncode_backend.dto.EditarSuscripcionDTO;
-import com.learncode_backend.dto.ListarSuscripcionDTO;
+import com.learncode_backend.model.Subscription;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface GestionSuscripcionService {
-	Page<ListarSuscripcionDTO> listar(
+public interface GestionSuscripcionService extends ICRUD<Subscription, UUID>{
+	Page<Subscription> listar(
             String plan,
             String status,
             Pageable pageable
-    );
+    ) throws Exception;
 	
-	EditarSuscripcionDTO obtenerPorId(UUID id);
+	Subscription obtenerPorId(UUID id) throws Exception;
 	
-	void editarSuscripcion(EditarSuscripcionDTO dto);
+	Subscription editar(Subscription entity) throws Exception;
 }

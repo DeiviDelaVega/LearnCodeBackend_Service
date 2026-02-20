@@ -2,105 +2,78 @@ package com.learncode_backend.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-
-import com.learncode_backend.client.AuthClient;
-import com.learncode_backend.dto.EditarSuscripcionDTO;
-import com.learncode_backend.dto.ListarSuscripcionDTO;
-import com.learncode_backend.dto.UserDTO;
 import com.learncode_backend.model.Subscription;
 import com.learncode_backend.repository.GestionSuscripcionRepository;
 import com.learncode_backend.service.GestionSuscripcionService;
+import com.learncode_backend.utils.ModeloNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
-public class GestionSuscripcionServiceImpl implements GestionSuscripcionService {
+public class GestionSuscripcionServiceImpl extends ICRUDImpl<Subscription, UUID> implements GestionSuscripcionService {
 	@Autowired
     private GestionSuscripcionRepository repository;
 	
-	@Autowired
-	private AuthClient authClient;
+	@Override
+	public JpaRepository<Subscription, UUID> getRepository() {
+		return repository;
+	}
 	
 	@Override
-	@Transactional
-	public Page<ListarSuscripcionDTO> listar(
-	    String plan,
-	    String status,
-	    Pageable pageable
-	) {
-	    Page<Subscription> page = repository.listarSuscripciones(plan, status, pageable);
+	public Page<Subscription> listar(String plan, String status, Pageable pageable) throws Exception {
+		return repository.listarSuscripciones(plan, status, pageable);
+	}
 
-	    return page.map(sub -> {
+	@Override
+	public Subscription obtenerPorId(UUID id) throws Exception {
+		Subscription sub = super.findById(id);
 
-	        UserDTO user = authClient.getUser(sub.getUserId());
+        if (sub == null)
+            throw new ModeloNotFoundException("Suscripción no existe con ID: " + id);
 
-	        return new ListarSuscripcionDTO(
-	            sub.getId(),
-	            user.getFullName(),
-	            user.getEmail(),
-	            user.getPhoto() != null
-	                ? user.getPhoto()
-	                : "https://ui-avatars.com/api/?name=" +
-	                    user.getFullName().replace(" ", "+"),
-	            sub.getPlanCode(),
-	            sub.getStatus(),
-	            sub.getStartAt(),
-	            sub.getEndAt(),
-	            sub.getUpdatedAt()
-	        );
-	    });
+        return sub;
 	}
 
 	@Override
 	@Transactional
-	public void editarSuscripcion(EditarSuscripcionDTO dto) {
-		if ("ACTIVE".equals(dto.getStatus())) {
+	public Subscription editar(Subscription entity) throws Exception {
+	    Subscription sub = super.findById(entity.getId());
 
-	        LocalDateTime nuevoFin = LocalDateTime.now()
-	                .plusMonths(1)
-	                .plusDays(2);
+	    if (sub == null)
+	        throw new ModeloNotFoundException("Suscripción no existe con ID: " + entity.getId());
+
+	    if ("ACTIVE".equals(entity.getStatus())) {
+
+	        LocalDateTime nuevoFin =
+	                LocalDateTime.now()
+	                        .plusMonths(1)
+	                        .plusDays(2);
 
 	        repository.activarSuscripcion(
-	            dto.getId(),
-	            dto.getPlan(),
-	            nuevoFin
-	        );
-
-	    } else if ("CANCELED".equals(dto.getStatus())) {
-
-	        repository.cancelarSuscripcion(
-	            dto.getId(),
-	            dto.getPlan()
-	        );
-
-	    } else {
-
-	        repository.actualizarSuscripcion(
-	            dto.getId(),
-	            dto.getPlan(),
-	            dto.getStatus()
+	                entity.getId(),
+	                entity.getPlanCode(),
+	                nuevoFin
 	        );
 	    }
-	}
+	    else if ("CANCELED".equals(entity.getStatus())) {
+	        repository.cancelarSuscripcion(
+	                entity.getId(),
+	                entity.getPlanCode()
+	        );
+	    }
+	    else {
+	        repository.actualizarSuscripcion(
+	                entity.getId(),
+	                entity.getPlanCode(),
+	                entity.getStatus()
+	        );
+	    }
+	    Subscription actualizado = super.findById(entity.getId());
 
-	@Override
-	public EditarSuscripcionDTO obtenerPorId(UUID id) {
-		
-		Subscription sub = repository.findById(id)
-		        .orElseThrow(() -> new RuntimeException("Suscripción no existe"));
-
-		    UserDTO user = authClient.getUser(sub.getUserId());
-
-		    return new EditarSuscripcionDTO(
-		        sub.getId(),
-		        user.getFullName(),
-		        user.getPhoto(),
-		        sub.getPlanCode(),
-		        sub.getStatus()
-		    );
+	    return actualizado;
 	}
 }
