@@ -6,5 +6,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CourseModuleRepository extends JpaRepository<CourseModule, UUID> {
-    List<CourseModule> findByCourseIdOrderByOrderAsc(UUID courseId);
+    List<CourseModule> findByCourseIdOrderByModuleOrderAsc(UUID courseId);
 }

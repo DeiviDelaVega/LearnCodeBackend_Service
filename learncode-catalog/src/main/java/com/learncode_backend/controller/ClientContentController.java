@@ -2,13 +2,15 @@ package com.learncode_backend.controller;
 
 import com.learncode_backend.dto.ModuleDTO;
 import com.learncode_backend.service.ClientContentService;
-import org.springframework.http.ResponseEntity; // Faltaba
+import com.learncode_backend.utils.ApiResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map; // Faltaba
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -21,45 +23,29 @@ public class ClientContentController {
         this.clientService = clientService;
     }
 
-    @PostMapping("/complete")
-    public void complete(
-        @AuthenticationPrincipal Jwt jwt,
-        @RequestParam UUID moduleId
-    ) {
-
-        String userId = jwt.getSubject(); // sub
-
-        clientService.markModuleAsCompleted(
-            UUID.fromString(userId),
-            moduleId
-        );
+    @PostMapping("/module/{moduleId}/complete")
+    public ResponseEntity<ApiResponse<String>> completeModule(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID moduleId) {
+        String email = jwt.getClaimAsString("email");
+        clientService.markModuleAsCompleted(email, moduleId);
+        return new ResponseEntity<>(new ApiResponse<>(true, "Módulo completado", null), HttpStatus.OK);
     }
 
     @GetMapping("/course/{courseId}")
-    public List<ModuleDTO> getContent(
-        @PathVariable UUID courseId
-    ) {
-        return clientService.getModulesForStudent(courseId);
+    public ResponseEntity<ApiResponse<List<ModuleDTO>>> getContent(@PathVariable UUID courseId) {
+        List<ModuleDTO> data = clientService.getModulesForStudent(courseId);
+        return new ResponseEntity<>(new ApiResponse<>(true, "Contenido obtenido", data), HttpStatus.OK);
     }
 
     @GetMapping("/course/{courseId}/progress")
-    public List<UUID> getProgress(
-        @AuthenticationPrincipal Jwt jwt,
-        @PathVariable UUID courseId
-    ) {
-
-        String userId = jwt.getSubject();
-
-        return clientService.getCompletedModuleIds(
-            UUID.fromString(userId),
-            courseId
-        );
+    public ResponseEntity<ApiResponse<List<UUID>>> getProgress(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID courseId) {
+        String email = jwt.getClaimAsString("email");
+        List<UUID> data = clientService.getCompletedModuleIds(email, courseId);
+        return new ResponseEntity<>(new ApiResponse<>(true, "Progreso obtenido", data), HttpStatus.OK);
     }
 
     @GetMapping("/file/{fileId}")
-    public ResponseEntity<Map<String, String>> getFile(
-        @PathVariable UUID fileId
-    ) {
-        return clientService.getFileContent(fileId);
+    public ResponseEntity<ApiResponse<Map<String, String>>> getFile(@PathVariable UUID fileId) {
+        Map<String, String> fileData = clientService.getFileContent(fileId).getBody();
+        return new ResponseEntity<>(new ApiResponse<>(true, "Archivo obtenido", fileData), HttpStatus.OK);
     }
 }

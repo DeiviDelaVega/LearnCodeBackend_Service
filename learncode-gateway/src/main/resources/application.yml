@@ -77,6 +77,16 @@ spring:
           uri: lb://CATALOG-SERVICE
           predicates:
             - Path=/api/admin/courses/**
+            
+        - id: admin-content
+          uri: lb://CATALOG-SERVICE
+          predicates:
+            - Path=/api/admin/content/**
+            
+        - id: client-content
+          uri: lb://CATALOG-SERVICE
+          predicates:
+            - Path=/api/client/content/**
 
         - id: courses-client
           uri: lb://CATALOG-SERVICE
