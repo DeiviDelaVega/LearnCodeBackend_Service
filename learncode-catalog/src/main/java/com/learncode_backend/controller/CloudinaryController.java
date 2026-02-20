@@ -17,8 +17,12 @@ public class CloudinaryController {
     }
 
     @PostMapping("/image")
-    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
-        String url = cloudinaryService.uploadImage(file);
-        return ResponseEntity.ok(url);
+    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) {
+        try {
+            String url = cloudinaryService.uploadImage(file);
+            return ResponseEntity.ok(url);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
     }
 }

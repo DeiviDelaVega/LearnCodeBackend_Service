@@ -19,16 +19,16 @@ public interface CourseRepository extends JpaRepository<Course, UUID> {
 	// Filtros
 	List<Course> findByTitle(String title);
 
-	List<Course> findByIsPublishedTrue();
+	List<Course> findByPublishedTrue();
 
-	List<Course> findByIsPublishedTrueAndTitle(String title);
+	List<Course> findByPublishedTrueAndTitle(String title);
 
 	// Conteo
-	@Query("SELECT COUNT(c) FROM Course c WHERE c.isPublished = true")
+	@Query("SELECT COUNT(c) FROM Course c WHERE c.published = true")
 	long countPublished();
 
 	@Query("SELECT c FROM Course c WHERE " + "(:title IS NULL OR CAST(c.title AS string) ILIKE %:title%) AND "
-			+ "(:published IS NULL OR c.isPublished = :published)")
+			+ "(:published IS NULL OR c.published = :published)")
 	Page<Course> findWithFilters(@Param("title") String title, @Param("published") Boolean published,
 			Pageable pageable);
 
@@ -39,7 +39,7 @@ public interface CourseRepository extends JpaRepository<Course, UUID> {
 		        c.subtitle,
 		        c.iconUrl,
 		        c.coverUrl,
-		        c.isFree,
+		        c.free,
 		        c.requiredPlanCode,
 		        COUNT(DISTINCT m),
 		        COUNT(DISTINCT f)
@@ -47,17 +47,17 @@ public interface CourseRepository extends JpaRepository<Course, UUID> {
 		    FROM Course c
 		    LEFT JOIN c.modules m
 		    LEFT JOIN m.files f
-		    WHERE c.isPublished = true
-		    GROUP BY c.id, c.title, c.subtitle, c.iconUrl, c.coverUrl, c.isFree, c.requiredPlanCode
+		    WHERE c.published = true
+		    GROUP BY c.id, c.title, c.subtitle, c.iconUrl, c.coverUrl, c.free, c.requiredPlanCode
 		""")
-		List<ClientCourseDTO> findAllIsPublishedWithCounts();
+		List<ClientCourseDTO> findAllPublishedWithCounts();
 
 
 	@Query("SELECT new com.learncode_backend.dto.ClientCourseDTO("
-			+ "c.id, c.title, c.subtitle, c.iconUrl, c.coverUrl, c.isFree, c.requiredPlanCode, "
+			+ "c.id, c.title, c.subtitle, c.iconUrl, c.coverUrl, c.free, c.requiredPlanCode, "
 			+ "(SELECT COUNT(m) FROM CourseModule m WHERE m.courseId = c.id), "
 			+ "(SELECT COUNT(f) FROM ModuleFile f WHERE f.module.courseId = c.id)) "
-			+ "FROM Course c WHERE c.id = :id AND c.isPublished = true")
+			+ "FROM Course c WHERE c.id = :id AND c.published = true")
 	ClientCourseDTO findPublishedByIdWithCounts(@Param("id") UUID id);
 
 }

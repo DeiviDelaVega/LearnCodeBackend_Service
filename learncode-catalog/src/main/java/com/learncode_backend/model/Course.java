@@ -44,13 +44,13 @@ public class Course {
 	private String coverUrl;
 
 	@Column(name = "is_free", nullable = false)
-	private boolean isFree;
+	private boolean free;
 
 	@Column(name = "required_plan_code", length = 50)
 	private String requiredPlanCode;
 
 	@Column(name = "is_published", nullable = false)
-	private boolean isPublished;
+	private boolean published;
 
 	@Column(name = "created_at", nullable = false)
 	private LocalDateTime createdAt;
@@ -65,7 +65,7 @@ public class Course {
 	}
 
 	public Course(UUID id, String title, String subtitle, String description, String iconUrl, String coverUrl,
-			boolean isFree, String requiredPlanCode, boolean isPublished, LocalDateTime createdAt) {
+			boolean free, String requiredPlanCode, boolean published, LocalDateTime createdAt) {
 		super();
 		this.id = id;
 		this.title = title;
@@ -73,9 +73,9 @@ public class Course {
 		this.description = description;
 		this.iconUrl = iconUrl;
 		this.coverUrl = coverUrl;
-		this.isFree = isFree;
+		this.free = free;
 		this.requiredPlanCode = requiredPlanCode;
-		this.isPublished = isPublished;
+		this.published = published;
 		this.createdAt = createdAt;
 	}
 
@@ -127,12 +127,12 @@ public class Course {
 		this.coverUrl = coverUrl;
 	}
 
-	public boolean isFree() {
-		return isFree;
+	public boolean getFree() {
+		return free;
 	}
 
-	public void setFree(boolean isFree) {
-		this.isFree = isFree;
+	public void setFree(boolean free) {
+		this.free = free;
 	}
 
 	public String getRequiredPlanCode() {
@@ -144,11 +144,11 @@ public class Course {
 	}
 
 	public boolean isPublished() {
-		return isPublished;
+		return published;
 	}
 
-	public void setIsPublished(boolean isPublished) {
-		this.isPublished = isPublished;
+	public void setPublished(boolean published) {
+		this.published = published;
 	}
 
 	public LocalDateTime getCreatedAt() {

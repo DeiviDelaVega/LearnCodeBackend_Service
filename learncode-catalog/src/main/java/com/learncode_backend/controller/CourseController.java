@@ -24,13 +24,13 @@ public class CourseController {
 	}
 
 	@GetMapping
-	public List<ClientCourseDTO> listPublished() {
+	public List<ClientCourseDTO> listPublished() throws Exception{
 		List<ClientCourseDTO> result = courseService.listPublished();
 		return result;
 	}
 
 	@GetMapping("/{id}")
-	public ClientCourseDTO getById(@PathVariable UUID id) {
+	public ClientCourseDTO getById(@PathVariable UUID id) throws Exception {
 		return courseService.getById(id);
 	}
 }
