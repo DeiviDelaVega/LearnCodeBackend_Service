@@ -2,6 +2,7 @@ package com.learncode_backend.controller;
 
 import java.util.UUID;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -12,51 +13,40 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.learncode_backend.dto.UserDTO;
 import com.learncode_backend.model.User;
-import com.learncode_backend.repository.UserRepository;
 import com.learncode_backend.service.UserService;
+import com.learncode_backend.utils.ModeloNotFoundException;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final UserService userService;
-    
     @Autowired
-    private UserRepository userRepository;
+    private UserService service;
 
-    public AuthController(UserService userService) {
-        this.userService = userService;
-    }
+    @Autowired
+    private ModelMapper mapper;
 
     @GetMapping("/me")
     public UserDTO me(@AuthenticationPrincipal Jwt jwt) {
 
-        User user = userService.getOrCreateUser(jwt);
+        User user = service.getOrCreateUser(jwt);
 
-        return new UserDTO(
-                user.getId(),
-                user.getFullName(),
-                user.getEmail(),
-                user.getPhoto(),
-                user.getRole(),     
-                user.getStatus() 
-            );
+        if (user == null) {
+            throw new ModeloNotFoundException("Usuario no encontrado");
+        }
+
+        return mapper.map(user, UserDTO.class);
     }
-    
+
     @GetMapping("/internal/user/{id}")
-    public UserDTO getUserById(@PathVariable UUID id) {
+    public UserDTO getById(@PathVariable UUID id) throws Exception {
 
-        User user = userRepository.findById(id)
-            .orElseThrow();
+        User user = service.findById(id);
 
-        return new UserDTO(
-            user.getId(),
-            user.getFullName(),
-            user.getEmail(),
-            user.getPhoto(),
-            user.getRole(),   
-            user.getStatus()  
-        );
+        if (user == null) {
+            throw new ModeloNotFoundException("Usuario no existe");
+        }
+
+        return mapper.map(user, UserDTO.class);
     }
-
 }
