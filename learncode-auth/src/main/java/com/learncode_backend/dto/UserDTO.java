@@ -10,6 +10,9 @@ public class UserDTO {
 	    private String photo;
 	    private String role;
 	    private String status;
+	    
+	    public UserDTO() {
+	    }
 
 	    // constructor
 	    public UserDTO(UUID id, String fullName, String email, String photo,

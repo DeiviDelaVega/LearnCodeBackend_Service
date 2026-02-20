@@ -3,6 +3,7 @@ package com.learncode_backend.service.impl;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
@@ -11,14 +12,20 @@ import com.learncode_backend.repository.UserRepository;
 import com.learncode_backend.service.UserService;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl  extends ICRUDImpl<User, UUID> implements UserService {
 
     private final UserRepository repository;
 
     public UserServiceImpl(UserRepository repository) {
         this.repository = repository;
     }
-
+   
+	@Override
+	public JpaRepository<User, UUID> getRepository() {
+		// TODO Auto-generated method stub
+		return repository;
+	}
+	
     @Override
     public User getOrCreateUser(Jwt jwt) {
 
@@ -55,4 +62,5 @@ public class UserServiceImpl implements UserService {
                 return repository.save(user);
             });
     }
+
 }
