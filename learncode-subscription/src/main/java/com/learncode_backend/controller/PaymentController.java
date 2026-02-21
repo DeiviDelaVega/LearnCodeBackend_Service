@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.learncode_backend.dto.PaymentDTO;
 import com.learncode_backend.model.Payment;
 import com.learncode_backend.service.PaymentService;
+import com.learncode_backend.utils.ApiResponse;
 
 @RestController
 @RequestMapping("/api/payments")
@@ -23,9 +24,17 @@ public class PaymentController {
     private PaymentService paymentService;
 
     @GetMapping
-    public List<PaymentDTO> getPayments() {
-        return paymentService.getAllPayments();
+    public ApiResponse<List<PaymentDTO>> getPayments() {
+
+        List<PaymentDTO> payments = paymentService.getAllPayments();
+
+        return new ApiResponse<>(
+                true,
+                "Lista de pagos obtenida correctamente",
+                payments
+        );
     }
+
 
 
 

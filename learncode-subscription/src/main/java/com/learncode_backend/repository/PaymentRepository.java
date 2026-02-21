@@ -22,7 +22,4 @@ public interface PaymentRepository extends JpaRepository<Payment, UUID> {
 	
 	boolean existsByStripePaymentIntentId(String sessionId);
 	
-
-	Page<Payment> findAllByOrderByCreatedAtDesc(Pageable pageable);
-
 }

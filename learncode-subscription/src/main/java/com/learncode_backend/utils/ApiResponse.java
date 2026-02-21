@@ -15,4 +15,14 @@ public class ApiResponse<T> {
 	//private LocalDateTime fecha;
 	private String mensaje;
 	private T data;
+
+	
+	public static <T> ApiResponse<T> ok(T data, String mensaje) {
+        return new ApiResponse<>(true, mensaje, data);
+    }
+
+    public static <T> ApiResponse<T> fail(String mensaje) {
+        return new ApiResponse<>(false, mensaje, null);
+    }
+	
 }

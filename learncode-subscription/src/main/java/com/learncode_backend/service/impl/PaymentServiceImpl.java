@@ -73,23 +73,30 @@ public class PaymentServiceImpl implements PaymentService {
     }
     
 	@Override
-    public List<PaymentDTO> getAllPayments() {
+	public List<PaymentDTO> getAllPayments() {
 
-        return repo.findAll().stream().map(pay -> {
+	    return repo.findAll().stream().map(pay -> {
 
-            UserDTO user = authClient.getUser(pay.getUserId());
+	        UserDTO user = null;
 
-            return new PaymentDTO(
-                pay.getId(),
-                user.getFullName(),
-                user.getEmail(),
-                user.getPhoto(),
-                pay.getPlanCode(),
-                pay.getAmountCents() / 100.0,
-                pay.getStatus(),
-                pay.getCreatedAt()
-            );
+	        try {
+	            user = authClient.getUser(pay.getUserId());
+	        } catch (Exception e) {
+	            System.out.println("Error obteniendo usuario: " + e.getMessage());
+	        }
 
-        }).toList();
-    }
+	        return new PaymentDTO(
+	            pay.getId(),
+	            user != null ? user.getFullName() : "Usuario no disponible",
+	            user != null ? user.getEmail() : null,
+	            user != null ? user.getPhoto() : null,
+	            pay.getPlanCode(),
+	            pay.getAmountCents() / 100.0,
+	            pay.getStatus(),
+	            pay.getCreatedAt()
+	        );
+
+	    }).toList();
+	}
+
 }
