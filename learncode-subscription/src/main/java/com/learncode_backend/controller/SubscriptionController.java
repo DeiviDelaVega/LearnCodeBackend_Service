@@ -12,6 +12,8 @@ import com.learncode_backend.dto.SubscriptionDTO;
 import com.learncode_backend.dto.UserDTO;
 import com.learncode_backend.model.Subscription;
 import com.learncode_backend.service.SubscriptionService;
+import com.learncode_backend.utils.ApiResponse;
+
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
@@ -20,7 +22,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 public class SubscriptionController {
 
     private final SubscriptionService service;
-    
     private final AuthClient authClient;
 
     public SubscriptionController(
@@ -28,53 +29,51 @@ public class SubscriptionController {
         AuthClient authClient
     ) {
         this.service = service;
-		this.authClient = authClient;
+        this.authClient = authClient;
     }
 
-   
- // ver mi plan
+    // Ver mi plan
     @GetMapping("/me")
-    public SubscriptionDTO mySubscription(
-        @AuthenticationPrincipal Jwt jwt
-    ) {
+    public ApiResponse<SubscriptionDTO> mySubscription(@AuthenticationPrincipal Jwt jwt) {
+        try {
+            UserDTO user = authClient.getMe();
+            UUID userId = user.getId();
 
-        UserDTO user = authClient.getMe();
+            Subscription sub = service.getSubscription(userId);
 
-        UUID userId = user.getId();
+            SubscriptionDTO dto;
+            if (sub == null || !"ACTIVE".equals(sub.getStatus())) {
+                dto = new SubscriptionDTO(null, "FREE", "ACTIVE", null, null);
+            } else {
+                dto = new SubscriptionDTO(
+                    sub.getId(),
+                    sub.getPlanCode(),
+                    sub.getStatus(),
+                    sub.getStartAt(),
+                    sub.getEndAt()
+                );
+            }
 
-        Subscription sub =
-            service.getSubscription(userId);
+            return ApiResponse.ok(dto, "Suscripción obtenida correctamente");
 
-        if (sub == null || !"ACTIVE".equals(sub.getStatus())) {
-            return new SubscriptionDTO(
-                null,
-                "FREE",
-                "ACTIVE",
-                null,
-                null
-            );
+        } catch (Exception e) {
+        	return ApiResponse.fail("Error al obtener la suscripción");
         }
-
-        return new SubscriptionDTO(
-            sub.getId(),
-            sub.getPlanCode(),
-            sub.getStatus(),
-            sub.getStartAt(),
-            sub.getEndAt()
-        );
     }
 
-
+    // Cancelar suscripción
     @PostMapping("/cancel")
-    public void cancelSubscription(
-        @AuthenticationPrincipal Jwt jwt
-    ) {
+    public ApiResponse<Void> cancelSubscription(@AuthenticationPrincipal Jwt jwt) {
+        try {
+            UserDTO user = authClient.getMe();
+            UUID userId = user.getId();
 
-        UserDTO user = authClient.getMe();
+            service.cancelSubscription(userId);
 
-        UUID userId = user.getId();
+            return ApiResponse.ok(null, "Suscripción cancelada correctamente");
 
-        service.cancelSubscription(userId);
+        } catch (Exception e) {
+        	return ApiResponse.fail("Error al cancelar la suscripción: " + e.getMessage());
+        }
     }
-
 }
