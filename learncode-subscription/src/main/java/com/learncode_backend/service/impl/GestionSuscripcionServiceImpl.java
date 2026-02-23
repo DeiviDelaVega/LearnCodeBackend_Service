@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import com.learncode_backend.model.Subscription;
 import com.learncode_backend.repository.GestionSuscripcionRepository;
 import com.learncode_backend.service.GestionSuscripcionService;
-import com.learncode_backend.utils.ModeloNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -31,21 +30,14 @@ public class GestionSuscripcionServiceImpl extends ICRUDImpl<Subscription, UUID>
 	@Override
 	public Subscription obtenerPorId(UUID id) throws Exception {
 		Subscription sub = super.findById(id);
-
-        if (sub == null)
-            throw new ModeloNotFoundException("Suscripción no existe con ID: " + id);
-
+		
         return sub;
 	}
 
 	@Override
 	@Transactional
 	public Subscription editar(Subscription entity) throws Exception {
-	    Subscription sub = super.findById(entity.getId());
-
-	    if (sub == null)
-	        throw new ModeloNotFoundException("Suscripción no existe con ID: " + entity.getId());
-
+	    
 	    if ("ACTIVE".equals(entity.getStatus())) {
 
 	        LocalDateTime nuevoFin =

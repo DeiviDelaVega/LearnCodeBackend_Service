@@ -5,7 +5,6 @@ import com.learncode_backend.model.User;
 import com.learncode_backend.service.GestionClienteService;
 import com.learncode_backend.utils.ApiResponse;
 import com.learncode_backend.utils.BusinessException;
-import com.learncode_backend.utils.ModeloNotFoundException;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +37,6 @@ public class GestionClienteController {
         Page<User> data = service.listarClientes(
                 search,
                 status,
-                role,
                 PageRequest.of(page, size)
         );
 
@@ -60,8 +58,11 @@ public class GestionClienteController {
 
         User user = service.obtenerCliente(email);
 
-        if (user == null)
-            throw new ModeloNotFoundException("Cliente con email :" + email + " no existe");
+        if (user == null) {
+            ApiResponse<?> response = new ApiResponse<>(false,
+                    "Cliente con email: " + email + " no existe", null);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
 
         GestionClienteDTO dto =
                 mapper.map(user, GestionClienteDTO.class);
@@ -82,12 +83,17 @@ public class GestionClienteController {
 
         if (data == null)
             throw new BusinessException("Datos inválidos");
-
+        
         User user =
                 mapper.map(data, User.class);
-
+        
         User actualizado =
                 service.editarCliente(email, user);
+        
+        if (actualizado == null) {
+            ApiResponse<?> response = new ApiResponse<>(false, "Cliente con email: " + email + " no existe", null);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
 
         GestionClienteDTO dto =
                 mapper.map(actualizado, GestionClienteDTO.class);
@@ -97,7 +103,6 @@ public class GestionClienteController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    
     
     @GetMapping("/id/{email}")
     public ResponseEntity<UUID> obtenerIdPorEmail(@PathVariable String email) {
