@@ -23,6 +23,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/plans/**").permitAll()
                 .requestMatchers("/api/courses/**").permitAll()
                 .requestMatchers("/api/stripe/webhook").permitAll()
+                .requestMatchers("/ws/**").permitAll()
+
 
                 // Protegidos
                 .anyRequest().authenticated()
@@ -35,4 +37,5 @@ public class SecurityConfig {
 
         return http.build();
     }
+    
 }
