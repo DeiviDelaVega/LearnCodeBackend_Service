@@ -16,13 +16,12 @@ public interface GestionClienteRepository extends JpaRepository<User, UUID> {
 		           OR LOWER(u.email) LIKE CONCAT('%', LOWER(:search), '%')
 		           OR LOWER(u.fullName) LIKE CONCAT('%', LOWER(:search), '%'))
 		      AND (:status IS NULL OR :status = 'ALL' OR u.status = :status)
-		      AND UPPER(TRIM(u.role)) = UPPER(TRIM(:role))
-		    ORDER BY u.createdAt ASC
+		      AND u.role = 'USER'
+		    ORDER BY COALESCE(u.createdAt, CURRENT_TIMESTAMP) ASC
 		""")
 	Page<User> findClientes(
 	        @Param("search") String search,
 	        @Param("status") String status,
-	        @Param("role") String role,
 	        Pageable pageable
 	);
 }

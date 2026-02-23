@@ -9,7 +9,6 @@ public interface GestionClienteService extends ICRUD<User, UUID>{
 	Page<User> listarClientes(
             String search,
             String status,
-            String role,
             Pageable pageable
     );
 	

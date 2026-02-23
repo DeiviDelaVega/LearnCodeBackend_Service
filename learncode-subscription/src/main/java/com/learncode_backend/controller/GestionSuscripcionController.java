@@ -6,8 +6,8 @@ import com.learncode_backend.dto.UserDTO;
 import com.learncode_backend.model.Subscription;
 import com.learncode_backend.service.GestionSuscripcionService;
 import com.learncode_backend.utils.ApiResponse;
-import com.learncode_backend.utils.BusinessException;
 import com.learncode_backend.utils.ModeloNotFoundException;
+import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -54,11 +54,7 @@ public class GestionSuscripcionController {
                 e.printStackTrace();
             }
             
-            if (user == null || "ADMIN".equals(user.getRole())) {
-                dto.setFullName("Usuario no registrado");
-                dto.setEmail("No disponible");
-                dto.setPhoto("https://ui-avatars.com/api/?name=Usuario+Desconocido");
-            } else {
+            if (user != null) {
                 dto.setFullName(user.getFullName());
                 dto.setEmail(user.getEmail());
                 dto.setPhoto(
@@ -88,7 +84,7 @@ public class GestionSuscripcionController {
         Subscription sub = service.obtenerPorId(id);
 
         if (sub == null)
-            throw new ModeloNotFoundException("Suscripcion con id :" + id + " no existe");
+            throw new ModeloNotFoundException("Suscripcion con id: " + id + " no existe");
 
         GestionSuscripcionDTO dto = mapper.map(sub, GestionSuscripcionDTO.class);
         dto.setPlan(sub.getPlanCode());
@@ -100,17 +96,13 @@ public class GestionSuscripcionController {
             e.printStackTrace();
         }
 
-        if (user == null) {
-            dto.setFullName("Usuario no registrado");
-            dto.setEmail("No disponible");
-            dto.setPhoto("https://ui-avatars.com/api/?name=Usuario+Desconocido");
-        } else {
+        if (user != null) {
             dto.setFullName(user.getFullName());
             dto.setEmail(user.getEmail());
             dto.setPhoto(
-                    user.getPhoto() != null
-                            ? user.getPhoto()
-                            : "https://ui-avatars.com/api/?name=" + user.getFullName().replace(" ", "+")
+                user.getPhoto() != null
+                    ? user.getPhoto()
+                    : "https://ui-avatars.com/api/?name=" + user.getFullName().replace(" ", "+")
             );
         }
 
@@ -123,18 +115,19 @@ public class GestionSuscripcionController {
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<?>> editar(
             @PathVariable UUID id,
-            @RequestBody GestionSuscripcionDTO data
+            @Valid @RequestBody GestionSuscripcionDTO data
     ) throws Exception {
+        Subscription existente = service.obtenerPorId(id);
 
-        if (data == null)
-            throw new BusinessException("Datos inválidos");
-
-        Subscription sub = mapper.map(data, Subscription.class);
-        sub.setId(id);
-        sub.setPlanCode(data.getPlan());
-
-        Subscription actualizado = service.editar(sub);
-
+        if (existente == null) {
+            throw new ModeloNotFoundException("Suscripción con id: " + id + " no existe");
+        }
+        
+        existente.setPlanCode(data.getPlan());
+        existente.setStatus(data.getStatus());
+        
+        Subscription actualizado = service.editar(existente);
+        
         GestionSuscripcionDTO dto = mapper.map(actualizado, GestionSuscripcionDTO.class);
         dto.setPlan(actualizado.getPlanCode());
         
@@ -144,24 +137,20 @@ public class GestionSuscripcionController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
-        if (user == null) {
-            dto.setFullName("Usuario no registrado");
-            dto.setEmail("No disponible");
-            dto.setPhoto("https://ui-avatars.com/api/?name=Usuario+Desconocido");
-        } else {
+
+        if (user != null) {
             dto.setFullName(user.getFullName());
             dto.setEmail(user.getEmail());
             dto.setPhoto(
-                    user.getPhoto() != null
-                            ? user.getPhoto()
-                            : "https://ui-avatars.com/api/?name=" + user.getFullName().replace(" ", "+")
+                user.getPhoto() != null
+                    ? user.getPhoto()
+                    : "https://ui-avatars.com/api/?name=" + user.getFullName().replace(" ", "+")
             );
         }
 
         ApiResponse<GestionSuscripcionDTO> responseDTO =
                 new ApiResponse<>(true, "Suscripción actualizada", dto);
 
-        return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+        return ResponseEntity.ok(responseDTO);
     }
 }

@@ -3,9 +3,11 @@ package com.learncode_backend.dto;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import jakarta.validation.constraints.*;
-import lombok.Data;
+import lombok.*;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class GestionClienteDTO {
     private UUID id;
     private String email;

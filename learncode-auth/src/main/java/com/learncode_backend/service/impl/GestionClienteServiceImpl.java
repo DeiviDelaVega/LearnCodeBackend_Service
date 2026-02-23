@@ -5,7 +5,6 @@ import com.learncode_backend.model.User;
 import com.learncode_backend.repository.GestionClienteRepository;
 import com.learncode_backend.repository.UserRepository;
 import com.learncode_backend.service.GestionClienteService;
-import com.learncode_backend.utils.ModeloNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,34 +25,29 @@ public class GestionClienteServiceImpl extends ICRUDImpl<User, UUID> implements 
     }
     
 	@Override
-	public Page<User> listarClientes(String search, String status, String role, Pageable pageable) {
+	public Page<User> listarClientes(String search, String status, Pageable pageable) {
 		if (search != null && search.isBlank())
             search = null;
 
         if (status == null || status.equalsIgnoreCase("ALL"))
             status = null;
-
-        if (role == null || role.isBlank())
-            role = null;
         
-        return repo.findClientes(search, status, role, pageable);
+        return repo.findClientes(search, status, pageable);
 	}
 
 	@Override
 	public User obtenerCliente(String email) {
-		return userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new ModeloNotFoundException(
-                                "Cliente no existe con email: " + email));
+		return userRepository.findByEmail(email).orElse(null);
 	}
-
+	
 	@Override
 	public User editarCliente(String email, User user) {
-		User usuarioBD = userRepository.findByEmail(email)
-	            .orElseThrow(() ->
-	                    new ModeloNotFoundException(
-	                            "Cliente no existe con email: " + email));
-
+		User usuarioBD = userRepository.findByEmail(email).orElse(null);
+		
+		if (usuarioBD == null) {
+	        return null;
+	    }
+		
 	    usuarioBD.setFullName(user.getFullName());
 	    usuarioBD.setRole(user.getRole());
 	    usuarioBD.setStatus(user.getStatus());
