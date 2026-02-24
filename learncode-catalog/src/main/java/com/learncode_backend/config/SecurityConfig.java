@@ -17,6 +17,7 @@ public class SecurityConfig {
             	    .requestMatchers("/api/courses/**").permitAll()   
             	    .anyRequest().permitAll()
             	)
+
             .oauth2ResourceServer(oauth -> oauth
                 .jwt(jwt -> jwt
                     .jwkSetUri("https://www.googleapis.com/oauth2/v3/certs")
