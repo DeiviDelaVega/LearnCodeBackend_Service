@@ -1,40 +1,13 @@
 package com.learncode_backend.service;
 
 import java.util.List;
+import java.util.UUID;
 
-import org.springframework.stereotype.Service;
-
-import com.learncode_backend.dto.PlanDTO;
 import com.learncode_backend.model.Plan;
-import com.learncode_backend.repository.PlanRepository;
 
-@Service
-public class PlanService {
+public interface PlanService extends ICRUD<Plan, UUID> {
 
-    private final PlanRepository repo;
+    List<Plan> getActivePlans() throws Exception;
 
-    public PlanService(PlanRepository repo) {
-        this.repo = repo;
-    }
-
-    public List<PlanDTO> getActivePlans() {
-
-        return repo.findAll()
-            .stream()
-            .filter(p -> Boolean.TRUE.equals(p.getIsActive()))
-            .map(this::toDTO)
-            .toList();
-    }
-
-    private PlanDTO toDTO(Plan p) {
-
-        return new PlanDTO(
-            p.getCode(),
-            p.getName(),
-            p.getDescription(),
-            p.getPriceCents() / 100.0,
-            p.getDurationDays()
-        );
-    }
+    Plan findByCode(String code) throws Exception;
 }
-
