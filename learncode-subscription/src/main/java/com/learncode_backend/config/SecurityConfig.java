@@ -20,7 +20,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin/**").permitAll()
                 
                 // Públicos
-                .requestMatchers("/api/plans/**").authenticated()
+                .requestMatchers("/api/plans/**").permitAll()
                 .requestMatchers("/api/courses/**").permitAll()
                 .requestMatchers("/api/stripe/webhook").permitAll()
                 .requestMatchers("/ws/**").permitAll()
