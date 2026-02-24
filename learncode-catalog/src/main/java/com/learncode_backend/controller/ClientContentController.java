@@ -45,7 +45,7 @@ public class ClientContentController {
 
     @GetMapping("/file/{fileId}")
     public ResponseEntity<ApiResponse<Map<String, String>>> getFile(@PathVariable UUID fileId) {
-        Map<String, String> fileData = clientService.getFileContent(fileId).getBody();
+        Map<String, String> fileData = clientService.getFileContent(fileId);
         return new ResponseEntity<>(new ApiResponse<>(true, "Archivo obtenido", fileData), HttpStatus.OK);
     }
 }

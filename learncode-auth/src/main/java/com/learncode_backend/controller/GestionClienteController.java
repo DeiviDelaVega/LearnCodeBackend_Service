@@ -19,11 +19,12 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/admin/gestionCliente")
 public class GestionClienteController {
-	@Autowired
+    
+    @Autowired
     private GestionClienteService service;
 	
-	@Autowired
-	private ModelMapper mapper;
+    @Autowired
+    private ModelMapper mapper;
 	
     @GetMapping
     public ResponseEntity<ApiResponse<?>> listarClientes(
@@ -34,43 +35,23 @@ public class GestionClienteController {
             @RequestParam(defaultValue = "10") int size
     ) throws Exception {
 
-        Page<User> data = service.listarClientes(
-                search,
-                status,
-                PageRequest.of(page, size)
-        );
-
-        Page<GestionClienteDTO> info =
-                data.map(user -> mapper.map(user, GestionClienteDTO.class));
-
-        ApiResponse<Page<GestionClienteDTO>> response =
-                new ApiResponse<>(true, "Lista de clientes", info);
-
+        Page<User> data = service.listarClientes(search, status, PageRequest.of(page, size));
+        Page<GestionClienteDTO> info = data.map(user -> mapper.map(user, GestionClienteDTO.class));
+        ApiResponse<Page<GestionClienteDTO>> response = new ApiResponse<>(true, "Lista de clientes", info);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     
     @GetMapping("/{email}")
-    public ResponseEntity<ApiResponse<?>> obtenerCliente(
-            @PathVariable String email
-    ) throws Exception {
-
+    public ResponseEntity<ApiResponse<?>> obtenerCliente(@PathVariable String email) throws Exception {
         email = URLDecoder.decode(email, StandardCharsets.UTF_8);
-
         User user = service.obtenerCliente(email);
 
         if (user == null) {
-            ApiResponse<?> response = new ApiResponse<>(false,
-                    "Cliente con email: " + email + " no existe", null);
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ApiResponse<>(false, "Cliente con email: " + email + " no existe", null), HttpStatus.NOT_FOUND);
         }
 
-        GestionClienteDTO dto =
-                mapper.map(user, GestionClienteDTO.class);
-
-        ApiResponse<GestionClienteDTO> response =
-                new ApiResponse<>(true, "Cliente encontrado", dto);
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        GestionClienteDTO dto = mapper.map(user, GestionClienteDTO.class);
+        return new ResponseEntity<>(new ApiResponse<>(true, "Cliente encontrado", dto), HttpStatus.OK);
     }
     
     @PutMapping("/{email}")
@@ -81,35 +62,18 @@ public class GestionClienteController {
 
         email = URLDecoder.decode(email, StandardCharsets.UTF_8);
 
-        if (data == null)
-            throw new BusinessException("Datos inválidos");
+        if (data == null) throw new BusinessException("Datos inválidos");
         
-        User user =
-                mapper.map(data, User.class);
-        
-        User actualizado =
-                service.editarCliente(email, user);
+        User user = mapper.map(data, User.class);
+        User actualizado = service.editarCliente(email, user);
         
         if (actualizado == null) {
-            ApiResponse<?> response = new ApiResponse<>(false, "Cliente con email: " + email + " no existe", null);
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ApiResponse<>(false, "Cliente con email: " + email + " no existe", null), HttpStatus.NOT_FOUND);
         }
 
-        GestionClienteDTO dto =
-                mapper.map(actualizado, GestionClienteDTO.class);
-
-        ApiResponse<GestionClienteDTO> response =
-                new ApiResponse<>(true, "Cliente actualizado", dto);
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        GestionClienteDTO dto = mapper.map(actualizado, GestionClienteDTO.class);
+        return new ResponseEntity<>(new ApiResponse<>(true, "Cliente actualizado", dto), HttpStatus.OK);
     }
     
-    @GetMapping("/id/{email}")
-    public ResponseEntity<UUID> obtenerIdPorEmail(@PathVariable String email) {
-        User user = service.obtenerCliente(email); 
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(user.getId());
-    }
+ 
 }

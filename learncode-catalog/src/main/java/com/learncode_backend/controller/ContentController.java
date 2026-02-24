@@ -1,10 +1,14 @@
 package com.learncode_backend.controller;
 
 import com.learncode_backend.dto.CreateFileDTO;
+import com.learncode_backend.dto.CreateModuleDTO;
 import com.learncode_backend.dto.ModuleDTO;
 import com.learncode_backend.model.CourseModule;
 import com.learncode_backend.service.ContentService;
 import com.learncode_backend.utils.ApiResponse;
+
+import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,12 +34,8 @@ public class ContentController {
     }
 
     @PostMapping("/module")
-    public ResponseEntity<ApiResponse<CourseModule>> createModule(@RequestBody Map<String, Object> body) {
-        UUID courseId = UUID.fromString((String) body.get("courseId"));
-        String title = (String) body.get("title");
-        Integer order = (Integer) body.get("order");
-
-        CourseModule created = contentService.createModule(courseId, title, order);
+    public ResponseEntity<ApiResponse<CourseModule>> createModule(@Valid @RequestBody CreateModuleDTO dto) {
+        CourseModule created = contentService.createModule(dto.courseId(), dto.title(), dto.order());
         return new ResponseEntity<>(new ApiResponse<>(true, "Módulo creado", created), HttpStatus.CREATED);
     }
 
@@ -53,7 +53,7 @@ public class ContentController {
 
     @GetMapping("/file/{id}")
     public ResponseEntity<ApiResponse<Map<String, String>>> getFile(@PathVariable UUID id) {
-        Map<String, String> fileData = contentService.getFileContent(id).getBody();
+        Map<String, String> fileData = contentService.getFileContent(id);
         return new ResponseEntity<>(new ApiResponse<>(true, "Archivo recuperado", fileData), HttpStatus.OK);
     }
 

@@ -7,7 +7,7 @@ import com.learncode_backend.model.CourseModule;
 import com.learncode_backend.model.ModuleFile;
 import com.learncode_backend.repository.CourseModuleRepository;
 import com.learncode_backend.repository.ModuleFileRepository;
-import org.springframework.http.ResponseEntity;
+import com.learncode_backend.utils.ModeloNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +52,7 @@ public class ContentService {
     @Transactional
     public CourseModule updateModule(UUID moduleId, String newTitle) {
         CourseModule module = moduleRepo.findById(moduleId)
-            .orElseThrow(() -> new RuntimeException("Modulo no encontrado"));
+            .orElseThrow(() -> new ModeloNotFoundException("Modulo no encontrado"));
         module.setTitle(newTitle);
         return moduleRepo.save(module);
     }
@@ -65,7 +65,7 @@ public class ContentService {
     @Transactional
     public void uploadFile(CreateFileDTO dto) {
         CourseModule module = moduleRepo.findById(dto.moduleId())
-            .orElseThrow(() -> new RuntimeException("Modulo no encontrado"));
+            .orElseThrow(() -> new ModeloNotFoundException("Modulo no encontrado"));
 
         if (module.getFiles() != null && !module.getFiles().isEmpty()) {
             fileRepo.deleteAll(module.getFiles());
@@ -81,15 +81,16 @@ public class ContentService {
         fileRepo.save(file);
     }
 
-    public ResponseEntity<Map<String, String>> getFileContent(UUID fileId) {
+    // AHORA DEVUELVE EL MAP DIRECTAMENTE, SIN RESPONSE_ENTITY
+    public Map<String, String> getFileContent(UUID fileId) {
         ModuleFile file = fileRepo.findById(fileId)
-            .orElseThrow(() -> new RuntimeException("Archivo no encontrado"));
+            .orElseThrow(() -> new ModeloNotFoundException("Archivo no encontrado"));
             
-        return ResponseEntity.ok(Map.of(
+        return Map.of(
             "fileName", file.getFileName(),
             "mimeType", file.getMimeType(),
             "base64", file.getBase64Content()
-        ));
+        );
     }
 
     @Transactional
