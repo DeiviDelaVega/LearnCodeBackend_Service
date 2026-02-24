@@ -17,7 +17,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Admin
                 .requestMatchers("/api/subscription/**").permitAll()
-                .requestMatchers("/api/admin/**").permitAll()
+                .requestMatchers("/api/admin/**").authenticated()
                 
                 // Públicos
                 .requestMatchers("/api/plans/**").authenticated()
