@@ -9,7 +9,7 @@ import com.learncode_backend.model.StudentProgress;
 import com.learncode_backend.repository.CourseModuleRepository;
 import com.learncode_backend.repository.ModuleFileRepository;
 import com.learncode_backend.repository.StudentProgressRepository;
-import org.springframework.http.ResponseEntity;
+import com.learncode_backend.utils.ModeloNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,7 +50,8 @@ public class ClientContentService {
     }
 
     public List<UUID> getCompletedModuleIds(String email, UUID courseId) {
-        UUID userId = authClient.getUserIdByEmail(email);
+        // SE AGREGA .getData() PARA EXTRAER EL UUID DEL APIRESPONSE
+        UUID userId = authClient.getUserIdByEmail(email).getData();
         return progressRepo.findByUserIdAndCourseId(userId, courseId).stream()
                 .map(StudentProgress::getModuleId)
                 .collect(Collectors.toList());
@@ -58,13 +59,15 @@ public class ClientContentService {
 
     @Transactional
     public void markModuleAsCompleted(String email, UUID moduleId) {
-        UUID userId = authClient.getUserIdByEmail(email);
+        // SE AGREGA .getData() PARA EXTRAER EL UUID DEL APIRESPONSE
+        UUID userId = authClient.getUserIdByEmail(email).getData();
         
         if (progressRepo.existsByUserIdAndModuleId(userId, moduleId)) {
             return;
         }
 
-        CourseModule module = moduleRepo.findById(moduleId).orElseThrow();
+        CourseModule module = moduleRepo.findById(moduleId)
+            .orElseThrow(() -> new ModeloNotFoundException("Módulo no encontrado"));
 
         StudentProgress progress = new StudentProgress();
         progress.setUserId(userId);
@@ -74,14 +77,14 @@ public class ClientContentService {
         progressRepo.save(progress);
     }
     
-    public ResponseEntity<Map<String, String>> getFileContent(UUID fileId) {
+    public Map<String, String> getFileContent(UUID fileId) {
         ModuleFile file = fileRepo.findById(fileId)
-            .orElseThrow(() -> new RuntimeException("Archivo no encontrado"));
+            .orElseThrow(() -> new ModeloNotFoundException("Archivo no encontrado"));
             
-        return ResponseEntity.ok(Map.of(
+        return Map.of(
             "fileName", file.getFileName(),
             "mimeType", file.getMimeType(),
             "base64", file.getBase64Content()
-        ));
+        );
     }
 }

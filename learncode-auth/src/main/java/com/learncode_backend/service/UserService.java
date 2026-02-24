@@ -8,4 +8,5 @@ import com.learncode_backend.model.User;
 
 public interface UserService extends ICRUD<User, UUID>{
     User getOrCreateUser(Jwt jwt);
+    
 }
