@@ -13,8 +13,14 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/catalog/count").authenticated()
+                
+                .requestMatchers("/api/admin/**").authenticated()
+                
                 .anyRequest().permitAll()
+                
             )
+            
+            
             .oauth2ResourceServer(oauth -> oauth
                 .jwt(jwt -> jwt
                     .jwkSetUri("https://www.googleapis.com/oauth2/v3/certs")
