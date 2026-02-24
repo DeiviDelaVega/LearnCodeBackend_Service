@@ -1,5 +1,6 @@
 package com.learncode_backend.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -11,5 +12,5 @@ public interface PlanRepository extends JpaRepository<Plan, UUID> {
 
     Optional<Plan> findByCode(String code);
 
+    List<Plan> findByIsActiveTrue();
 }
-

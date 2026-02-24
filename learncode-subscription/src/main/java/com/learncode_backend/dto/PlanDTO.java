@@ -1,37 +1,24 @@
 package com.learncode_backend.dto;
 
+import jakarta.validation.constraints.*;
+import lombok.Data;
+
+@Data
 public class PlanDTO {
 
+    @NotBlank(message = "El código es obligatorio")
     private String code;
+
+    @NotBlank(message = "El nombre es obligatorio")
     private String name;
+
     private String description;
+
+    @NotNull(message = "El precio es obligatorio")
+    @PositiveOrZero(message = "El precio no puede ser negativo")
     private Double price;
+
+    @NotNull(message = "La duración es obligatoria")
+    @Positive(message = "La duración debe ser mayor a 0")
     private Integer durationDays;
-
-    public PlanDTO() {}
-
-    public PlanDTO(
-        String code,
-        String name,
-        String description,
-        Double price,
-        Integer durationDays
-    ) {
-        this.code = code;
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.durationDays = durationDays;
-    }
-
-    public String getCode() { return code; }
-
-    public String getName() { return name; }
-
-    public String getDescription() { return description; }
-
-    public Double getPrice() { return price; }
-
-    public Integer getDurationDays() { return durationDays; }
 }
-
