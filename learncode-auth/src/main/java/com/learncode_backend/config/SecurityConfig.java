@@ -49,7 +49,8 @@ public class SecurityConfig {
             	    .requestMatchers("/api/payments/**").hasAuthority("ADMIN")
 
             	    // Admin 
-            	    .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+            	    .requestMatchers("/api/admin/**").authenticated()
+            	    
             	    // Client & Others 
             	    .anyRequest().authenticated()
             	)
