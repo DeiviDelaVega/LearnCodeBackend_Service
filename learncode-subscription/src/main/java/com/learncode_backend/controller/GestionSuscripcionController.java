@@ -51,18 +51,19 @@ public class GestionSuscripcionController {
             try {
                 user = authClient.getUser(sub.getUserId());
             } catch (Exception e) {
-                e.printStackTrace();
+            	user = new UserDTO();
+                user.setFullName("Usuario desconocido");
+                user.setEmail("desconocido@correo.com");
+                user.setPhoto("https://ui-avatars.com/api/?name=Usuario+Desconocido");
             }
             
-            if (user != null) {
-                dto.setFullName(user.getFullName());
-                dto.setEmail(user.getEmail());
-                dto.setPhoto(
-                    user.getPhoto() != null
-                        ? user.getPhoto()
-                        : "https://ui-avatars.com/api/?name=" + user.getFullName().replace(" ", "+")
-                );
-            }
+            dto.setFullName(user.getFullName());
+            dto.setEmail(user.getEmail());
+            dto.setPhoto(
+                user.getPhoto() != null
+                    ? user.getPhoto()
+                    : "https://ui-avatars.com/api/?name=" + user.getFullName().replace(" ", "+")
+            );
 
             dtoList.add(dto);
         }
@@ -93,18 +94,19 @@ public class GestionSuscripcionController {
         try {
             user = authClient.getUser(sub.getUserId());
         } catch (Exception e) {
-            e.printStackTrace();
+        	user = new UserDTO();
+            user.setFullName("Usuario desconocido");
+            user.setEmail("desconocido@correo.com");
+            user.setPhoto("https://ui-avatars.com/api/?name=Usuario+Desconocido");
         }
-
-        if (user != null) {
-            dto.setFullName(user.getFullName());
-            dto.setEmail(user.getEmail());
-            dto.setPhoto(
-                user.getPhoto() != null
-                    ? user.getPhoto()
-                    : "https://ui-avatars.com/api/?name=" + user.getFullName().replace(" ", "+")
-            );
-        }
+        
+        dto.setFullName(user.getFullName());
+        dto.setEmail(user.getEmail());
+        dto.setPhoto(
+            user.getPhoto() != null
+                ? user.getPhoto()
+                : "https://ui-avatars.com/api/?name=" + user.getFullName().replace(" ", "+")
+        );
 
         ApiResponse<GestionSuscripcionDTO> responseDTO =
                 new ApiResponse<>(true, "Suscripcion encontrada", dto);
@@ -135,18 +137,19 @@ public class GestionSuscripcionController {
         try {
             user = authClient.getUser(actualizado.getUserId());
         } catch (Exception e) {
-            e.printStackTrace();
+        	user = new UserDTO();
+            user.setFullName("Usuario desconocido");
+            user.setEmail("desconocido@correo.com");
+            user.setPhoto("https://ui-avatars.com/api/?name=Usuario+Desconocido");
         }
 
-        if (user != null) {
-            dto.setFullName(user.getFullName());
-            dto.setEmail(user.getEmail());
-            dto.setPhoto(
-                user.getPhoto() != null
-                    ? user.getPhoto()
-                    : "https://ui-avatars.com/api/?name=" + user.getFullName().replace(" ", "+")
-            );
-        }
+        dto.setFullName(user.getFullName());
+        dto.setEmail(user.getEmail());
+        dto.setPhoto(
+            user.getPhoto() != null
+                ? user.getPhoto()
+                : "https://ui-avatars.com/api/?name=" + user.getFullName().replace(" ", "+")
+        );
 
         ApiResponse<GestionSuscripcionDTO> responseDTO =
                 new ApiResponse<>(true, "Suscripción actualizada", dto);
